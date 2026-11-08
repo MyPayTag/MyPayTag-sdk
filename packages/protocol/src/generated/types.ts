@@ -10,6 +10,9 @@ export type { NearOneClickQuoteOption } from "./types/near-one-click-quote-optio
 export type { NearOneClickQuoteSelectionRequest } from "./types/near-one-click-quote-selection-request.js";
 export type { NotificationEvent } from "./types/notification-event.js";
 export type { PayToRoute } from "./types/pay-to-route.js";
+export type { PortalHistoryResponse } from "./types/portal-history-response.js";
+export type { PortalPreferencesResponse } from "./types/portal-preferences-response.js";
+export type { PortalPreferencesUpdateRequest } from "./types/portal-preferences-update-request.js";
 export type { ProviderCallbackRequest } from "./types/provider-callback-request.js";
 export type { ProviderResponse } from "./types/provider-response.js";
 export type { ResolveRequest } from "./types/resolve-request.js";

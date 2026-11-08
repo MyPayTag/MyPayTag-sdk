@@ -18,6 +18,9 @@ import {
   validateNearOneClickQuoteOption,
   validateNearOneClickQuoteSelectionRequest,
   validatePayToRoute,
+  validatePortalHistoryResponse,
+  validatePortalPreferencesResponse,
+  validatePortalPreferencesUpdateRequest,
   validateProviderCallbackRequest,
   validateProviderResponse,
   validateRouteDeleteResponse,
@@ -39,6 +42,9 @@ import {
   validNotificationEvent,
   validNearOneClickQuoteOption,
   validNearOneClickQuoteSelectionRequest,
+  validPortalHistoryResponse,
+  validPortalPreferencesResponse,
+  validPortalPreferencesUpdateRequest,
   validProviderCallbackRequest,
   validProviderResponse,
   validPayToRoute,
@@ -131,6 +137,15 @@ describe("@mypaytag/protocol", () => {
     expect(validateNearOneClickPayableInstruction(validNearOneClickPayableInstruction)).toEqual(
       validNearOneClickPayableInstruction,
     );
+    expect(validatePortalPreferencesResponse(validPortalPreferencesResponse)).toEqual(
+      validPortalPreferencesResponse,
+    );
+    expect(validatePortalPreferencesUpdateRequest(validPortalPreferencesUpdateRequest)).toEqual(
+      validPortalPreferencesUpdateRequest,
+    );
+    expect(validatePortalHistoryResponse(validPortalHistoryResponse)).toEqual(
+      validPortalHistoryResponse,
+    );
   });
 
   it("accepts every public status value and response shape", () => {
@@ -195,6 +210,82 @@ describe("@mypaytag/protocol", () => {
         validateRouteUpdateRequest({
           ...validRouteUpdateRequest,
           [field]: value,
+        }),
+      ).toThrow();
+    }
+  });
+
+  it("rejects portal preference payloads that omit user scope or expose private wallet data", () => {
+    expect(() =>
+      validatePortalPreferencesResponse({
+        ...validPortalPreferencesResponse,
+        user: undefined,
+      }),
+    ).toThrow();
+
+    for (const [field, value] of [
+      ["address", "0xabc123"],
+      ["recipientAddress", "0xabc123"],
+      ["walletGraph", { connectedWallets: ["0xabc123"] }],
+      ["providerCallbackUrl", "https://wallet.example/callback"],
+      ["privilegedBackendToken", "private-token"],
+    ] as const) {
+      expect(() =>
+        validatePortalPreferencesResponse({
+          ...validPortalPreferencesResponse,
+          groups: [
+            {
+              ...validPortalPreferencesResponse.groups[0],
+              routes: [
+                {
+                  ...validPortalPreferencesResponse.groups[0].routes[0],
+                  [field]: value,
+                },
+              ],
+            },
+          ],
+        }),
+      ).toThrow();
+    }
+
+    expect(() =>
+      validatePortalPreferencesUpdateRequest({
+        ...validPortalPreferencesUpdateRequest,
+        orderedRouteIds: [],
+      }),
+    ).toThrow();
+    expect(() =>
+      validatePortalPreferencesUpdateRequest({
+        ...validPortalPreferencesUpdateRequest,
+        orderedRouteIds: ["route-1", "route-1"],
+      }),
+    ).toThrow();
+  });
+
+  it("rejects portal history payloads that omit user scope or expose private diagnostics", () => {
+    expect(() =>
+      validatePortalHistoryResponse({
+        ...validPortalHistoryResponse,
+        user: undefined,
+      }),
+    ).toThrow();
+
+    for (const [field, value] of [
+      ["rawIdentifier", "abd123@cubid.mypaytag"],
+      ["providerSecret", "secret"],
+      ["privateDiagnostics", { reason: "rls_miss" }],
+      ["walletGraph", { connectedWallets: ["0xabc123"] }],
+      ["privilegedBackendToken", "private-token"],
+    ] as const) {
+      expect(() =>
+        validatePortalHistoryResponse({
+          ...validPortalHistoryResponse,
+          items: [
+            {
+              ...validPortalHistoryResponse.items[0],
+              [field]: value,
+            },
+          ],
         }),
       ).toThrow();
     }
@@ -572,6 +663,12 @@ describe("@mypaytag/protocol", () => {
       openApi.paths["/hosted-actions/{actionId}"].post.requestBody.content["application/json"].examples.selectRoute.value;
     const hostedActionCompletionExample =
       openApi.paths["/hosted-actions/{actionId}"].post.responses["200"].content["application/json"].examples.selectedRoute.value;
+    const portalPreferencesExample =
+      openApi.paths["/portal/preferences"].get.responses["200"].content["application/json"].examples.preferences.value;
+    const portalPreferencesUpdateExample =
+      openApi.paths["/portal/preferences"].put.requestBody.content["application/json"].examples.reorder.value;
+    const portalHistoryExample =
+      openApi.paths["/portal/history"].get.responses["200"].content["application/json"].examples.history.value;
     const notificationExample =
       openApi.paths["/notifications"].post.requestBody.content["application/json"].examples.paymentIntentCreated.value;
     const providerCallbackExample =
@@ -598,6 +695,13 @@ describe("@mypaytag/protocol", () => {
     expect(validateHostedActionCompletion(hostedActionCompletionExample)).toEqual(
       hostedActionCompletionExample,
     );
+    expect(validatePortalPreferencesResponse(portalPreferencesExample)).toEqual(
+      portalPreferencesExample,
+    );
+    expect(validatePortalPreferencesUpdateRequest(portalPreferencesUpdateExample)).toEqual(
+      portalPreferencesUpdateExample,
+    );
+    expect(validatePortalHistoryResponse(portalHistoryExample)).toEqual(portalHistoryExample);
     expect(validateNotificationEvent(notificationExample)).toEqual(notificationExample);
     expect(validateProviderCallbackRequest(providerCallbackExample)).toEqual(providerCallbackExample);
     expect(validateProviderResponse(providerResponseExample)).toEqual(providerResponseExample);

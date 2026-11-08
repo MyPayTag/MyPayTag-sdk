@@ -8,6 +8,9 @@ import type {
   NearOneClickQuoteSelectionRequest,
   NotificationEvent,
   PayToRoute,
+  PortalHistoryResponse,
+  PortalPreferencesResponse,
+  PortalPreferencesUpdateRequest,
   ProviderCallbackRequest,
   ProviderResponse,
   RouteDeleteResponse,
@@ -85,6 +88,181 @@ export const validRouteNotFoundResponse: RouteReadResponse = {
 
 export const validRouteUnavailableResponse: RouteDeleteResponse = {
   status: "provider_unavailable",
+};
+
+export const validPortalPreferencesResponse: PortalPreferencesResponse = {
+  schema: "mypaytag.portal.preferences.v1",
+  user: {
+    maskedDisplay: "a***@cubid.mypaytag",
+  },
+  groups: [
+    {
+      paytagRef: "paytag_ref_abc",
+      maskedDisplay: "a***@cubid.mypaytag",
+      chain: "base",
+      network: "mainnet",
+      asset: "USDC",
+      payingDapp: {
+        id: "chaincrew",
+        displayName: "ChainCrew",
+      },
+      routes: [
+        {
+          routeId: "mpt_route_123",
+          payToDappId: "smartrust-wallet",
+          payToDappName: "SmarTrust Wallet",
+          appUrl: "https://wallet.smartrust.example",
+          priority: 0,
+          isDefault: true,
+          state: "active",
+        },
+        {
+          routeId: "mpt_route_456",
+          payToDappId: "vaultpay-wallet",
+          payToDappName: "VaultPay Wallet",
+          appUrl: "https://vaultpay.example",
+          priority: 1,
+          isDefault: false,
+          state: "active",
+        },
+      ],
+    },
+  ],
+};
+
+export const validPortalPreferencesUpdateRequest: PortalPreferencesUpdateRequest = {
+  schema: "mypaytag.portal.preferences.update.v1",
+  group: {
+    paytagRef: "paytag_ref_abc",
+    chain: "base",
+    network: "mainnet",
+    asset: "USDC",
+    payingDappId: "chaincrew",
+  },
+  orderedRouteIds: ["mpt_route_456", "mpt_route_123"],
+};
+
+export const validPortalHistoryResponse: PortalHistoryResponse = {
+  schema: "mypaytag.portal.history.v1",
+  user: {
+    maskedDisplay: "a***@cubid.mypaytag",
+  },
+  items: [
+    {
+      kind: "question",
+      id: "mpt_req_123",
+      createdAt: "2026-06-24T19:58:00Z",
+      payingDapp: {
+        id: "chaincrew",
+        displayName: "ChainCrew",
+        appUrl: "https://chaincrew.example",
+      },
+      paytagMaskedDisplay: "a***@cubid.mypaytag",
+      requestedPaths: [
+        {
+          chain: "base",
+          network: "mainnet",
+          asset: "USDC",
+        },
+      ],
+      amount: {
+        value: "25.00",
+        currency: "USDC",
+      },
+      purpose: "payout",
+      payingDappReference: "chaincrew:payout_987",
+    },
+    {
+      kind: "answer",
+      id: "mpt_answer_123",
+      questionId: "mpt_req_123",
+      createdAt: "2026-06-24T19:58:02Z",
+      status: "resolved",
+      selectedPayToDapp: {
+        id: "smartrust-wallet",
+        displayName: "SmarTrust Wallet",
+      },
+    },
+    {
+      kind: "quote",
+      id: "near_1click_quote_123",
+      questionId: "mpt_req_123",
+      createdAt: "2026-06-24T19:58:03Z",
+      provider: "near_1click",
+      from: {
+        chain: "near",
+        network: "mainnet",
+        asset: "USDC",
+        amount: "25.18",
+      },
+      to: {
+        chain: "base",
+        network: "mainnet",
+        asset: "USDC",
+        amount: "25.00",
+      },
+      fees: [
+        {
+          label: "NEAR 1Click execution",
+          amount: "0.16",
+          asset: "USDC",
+          chargedTo: "sender",
+          source: "near_1click",
+        },
+      ],
+      expiresAt: "2026-06-24T20:00:00Z",
+      routeSteps: [
+        {
+          label: "NEAR USDC to Base USDC",
+          from: {
+            chain: "near",
+            network: "mainnet",
+            asset: "USDC",
+            amount: "25.18",
+          },
+          to: {
+            chain: "base",
+            network: "mainnet",
+            asset: "USDC",
+            amount: "25.00",
+          },
+        },
+      ],
+      status: "selected",
+      selectedQuote: {
+        selectedQuoteId: "near_1click_quote_123",
+        selectedAt: "2026-06-24T19:58:10Z",
+        payableInstructionRef: "near_payable_123",
+      },
+    },
+    {
+      kind: "payment_intent",
+      id: "mpt_pi_123",
+      questionId: "mpt_req_123",
+      createdAt: "2026-06-24T19:58:11Z",
+      status: "ready",
+      payToDapp: {
+        id: "smartrust-wallet",
+        displayName: "SmarTrust Wallet",
+      },
+      amount: {
+        chain: "base",
+        network: "mainnet",
+        asset: "USDC",
+        amount: "25.00",
+      },
+      expiresAt: "2026-06-24T20:00:00Z",
+    },
+    {
+      kind: "receipt",
+      id: "mpt_receipt_123",
+      paymentIntentId: "mpt_pi_123",
+      createdAt: "2026-06-24T20:01:00Z",
+      status: "pending",
+      chain: "base",
+      network: "mainnet",
+    },
+  ],
 };
 
 export const validHostedActionView: HostedActionView = {

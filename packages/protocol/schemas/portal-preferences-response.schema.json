@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mypaytag.com/portal-preferences-response.schema.json",
+  "title": "PortalPreferencesResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "user", "groups"],
+  "properties": {
+    "schema": { "const": "mypaytag.portal.preferences.v1" },
+    "user": { "$ref": "#/$defs/portalUser" },
+    "groups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/preferenceGroup" }
+    }
+  },
+  "$defs": {
+    "portalUser": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maskedDisplay": { "type": "string", "minLength": 1 }
+      }
+    },
+    "dappSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "displayName"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1 }
+      }
+    },
+    "preferenceGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paytagRef", "chain", "network", "asset", "routes"],
+      "properties": {
+        "paytagRef": { "type": "string", "minLength": 1 },
+        "maskedDisplay": { "type": "string", "minLength": 1 },
+        "chain": { "type": "string", "minLength": 1 },
+        "network": { "type": "string", "minLength": 1 },
+        "asset": { "type": "string", "minLength": 1 },
+        "payingDapp": { "$ref": "#/$defs/dappSummary" },
+        "routes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/receiveRoute" }
+        }
+      }
+    },
+    "receiveRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routeId", "payToDappId", "payToDappName", "priority", "isDefault", "state"],
+      "properties": {
+        "routeId": { "type": "string", "minLength": 1 },
+        "payToDappId": { "type": "string", "minLength": 1 },
+        "payToDappName": { "type": "string", "minLength": 1 },
+        "appUrl": { "type": "string", "format": "uri" },
+        "priority": { "type": "integer", "minimum": 0 },
+        "isDefault": { "type": "boolean" },
+        "state": { "enum": ["active", "disabled", "revoked"] }
+      }
+    }
+  }
+}

@@ -1057,6 +1057,787 @@ export const PayToRouteSchema = {
   }
 } as const;
 
+export const PortalHistoryResponseSchema = {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mypaytag.com/portal-history-response.schema.json",
+  "title": "PortalHistoryResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "user",
+    "items"
+  ],
+  "properties": {
+    "schema": {
+      "const": "mypaytag.portal.history.v1"
+    },
+    "user": {
+      "$ref": "#/$defs/portalUser"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/historyItem"
+      }
+    },
+    "nextCursor": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "portalUser": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maskedDisplay": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "dappSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "displayName"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "appUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "assetAmount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chain",
+        "network",
+        "asset",
+        "amount"
+      ],
+      "properties": {
+        "chain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "network": {
+          "type": "string",
+          "minLength": 1
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        }
+      }
+    },
+    "fee": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "amount",
+        "asset"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chargedTo": {
+          "enum": [
+            "sender",
+            "recipient"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "routeStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "routeReference"
+          ]
+        },
+        {
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "routeReference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from": {
+          "$ref": "#/$defs/assetAmount"
+        },
+        "to": {
+          "$ref": "#/$defs/assetAmount"
+        }
+      }
+    },
+    "requestedPath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chain",
+        "network",
+        "asset"
+      ],
+      "properties": {
+        "chain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "network": {
+          "type": "string",
+          "minLength": 1
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "createdAt",
+        "payingDapp",
+        "requestedPaths",
+        "amount",
+        "purpose",
+        "payingDappReference"
+      ],
+      "properties": {
+        "kind": {
+          "const": "question"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payingDapp": {
+          "$ref": "#/$defs/dappSummary"
+        },
+        "paytagMaskedDisplay": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestedPaths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/requestedPath"
+          }
+        },
+        "amount": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "currency"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "pattern": "^[0-9]+(\\.[0-9]+)?$"
+            },
+            "currency": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payingDappReference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "answer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "questionId",
+        "createdAt",
+        "status"
+      ],
+      "properties": {
+        "kind": {
+          "const": "answer"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "resolved",
+            "no_route",
+            "user_action_required",
+            "authorization_required",
+            "provider_unavailable",
+            "provider_error",
+            "invalid_identifier",
+            "invalid_request"
+          ]
+        },
+        "selectedPayToDapp": {
+          "$ref": "#/$defs/dappSummary"
+        },
+        "actionState": {
+          "enum": [
+            "ready",
+            "selected_route",
+            "expired",
+            "completed"
+          ]
+        }
+      }
+    },
+    "quote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "questionId",
+        "createdAt",
+        "provider",
+        "from",
+        "to",
+        "fees",
+        "expiresAt",
+        "routeSteps",
+        "status"
+      ],
+      "properties": {
+        "kind": {
+          "const": "quote"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from": {
+          "$ref": "#/$defs/assetAmount"
+        },
+        "to": {
+          "$ref": "#/$defs/assetAmount"
+        },
+        "fees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fee"
+          }
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "routeSteps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/routeStep"
+          }
+        },
+        "status": {
+          "enum": [
+            "available",
+            "selected",
+            "expired",
+            "failed"
+          ]
+        },
+        "selectedQuote": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "selectedQuoteId",
+            "selectedAt"
+          ],
+          "properties": {
+            "selectedQuoteId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selectedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "payableInstructionRef": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "selectedQuoteSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "questionId",
+        "quoteId",
+        "selectedAt",
+        "status"
+      ],
+      "properties": {
+        "kind": {
+          "const": "selected_quote"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quoteId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selectedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "ready",
+            "expired",
+            "failed"
+          ]
+        },
+        "payableInstructionRef": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "paymentIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "questionId",
+        "createdAt",
+        "status",
+        "payToDapp",
+        "amount",
+        "expiresAt"
+      ],
+      "properties": {
+        "kind": {
+          "const": "payment_intent"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "ready",
+            "expired",
+            "used",
+            "failed"
+          ]
+        },
+        "payToDapp": {
+          "$ref": "#/$defs/dappSummary"
+        },
+        "amount": {
+          "$ref": "#/$defs/assetAmount"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "createdAt",
+        "status"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "paymentIntentId"
+          ]
+        },
+        {
+          "required": [
+            "selectedQuoteId"
+          ]
+        }
+      ],
+      "properties": {
+        "kind": {
+          "const": "receipt"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paymentIntentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selectedQuoteId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "completed",
+            "failed",
+            "unavailable"
+          ]
+        },
+        "transactionHash": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "network": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explorerUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "historyItem": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/question"
+        },
+        {
+          "$ref": "#/$defs/answer"
+        },
+        {
+          "$ref": "#/$defs/quote"
+        },
+        {
+          "$ref": "#/$defs/selectedQuoteSummary"
+        },
+        {
+          "$ref": "#/$defs/paymentIntent"
+        },
+        {
+          "$ref": "#/$defs/receipt"
+        }
+      ]
+    }
+  }
+} as const;
+
+export const PortalPreferencesResponseSchema = {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mypaytag.com/portal-preferences-response.schema.json",
+  "title": "PortalPreferencesResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "user",
+    "groups"
+  ],
+  "properties": {
+    "schema": {
+      "const": "mypaytag.portal.preferences.v1"
+    },
+    "user": {
+      "$ref": "#/$defs/portalUser"
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/preferenceGroup"
+      }
+    }
+  },
+  "$defs": {
+    "portalUser": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maskedDisplay": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "dappSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "displayName"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "preferenceGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paytagRef",
+        "chain",
+        "network",
+        "asset",
+        "routes"
+      ],
+      "properties": {
+        "paytagRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "maskedDisplay": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "network": {
+          "type": "string",
+          "minLength": 1
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payingDapp": {
+          "$ref": "#/$defs/dappSummary"
+        },
+        "routes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/receiveRoute"
+          }
+        }
+      }
+    },
+    "receiveRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "payToDappId",
+        "payToDappName",
+        "priority",
+        "isDefault",
+        "state"
+      ],
+      "properties": {
+        "routeId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payToDappId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payToDappName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "appUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "active",
+            "disabled",
+            "revoked"
+          ]
+        }
+      }
+    }
+  }
+} as const;
+
+export const PortalPreferencesUpdateRequestSchema = {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mypaytag.com/portal-preferences-update-request.schema.json",
+  "title": "PortalPreferencesUpdateRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "group",
+    "orderedRouteIds"
+  ],
+  "properties": {
+    "schema": {
+      "const": "mypaytag.portal.preferences.update.v1"
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paytagRef",
+        "chain",
+        "network",
+        "asset"
+      ],
+      "properties": {
+        "paytagRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "network": {
+          "type": "string",
+          "minLength": 1
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payingDappId": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "orderedRouteIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+} as const;
+
 export const ProviderCallbackRequestSchema = {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.mypaytag.com/provider-callback-request.schema.json",
@@ -2397,6 +3178,9 @@ export const protocolSchemas = {
   "near-one-click-quote-selection-request": NearOneClickQuoteSelectionRequestSchema,
   "notification-event": NotificationEventSchema,
   "pay-to-route": PayToRouteSchema,
+  "portal-history-response": PortalHistoryResponseSchema,
+  "portal-preferences-response": PortalPreferencesResponseSchema,
+  "portal-preferences-update-request": PortalPreferencesUpdateRequestSchema,
   "provider-callback-request": ProviderCallbackRequestSchema,
   "provider-response": ProviderResponseSchema,
   "resolve-request": ResolveRequestSchema,

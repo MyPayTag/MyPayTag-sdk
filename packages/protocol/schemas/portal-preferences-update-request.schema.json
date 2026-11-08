@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mypaytag.com/portal-preferences-update-request.schema.json",
+  "title": "PortalPreferencesUpdateRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "group", "orderedRouteIds"],
+  "properties": {
+    "schema": { "const": "mypaytag.portal.preferences.update.v1" },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paytagRef", "chain", "network", "asset"],
+      "properties": {
+        "paytagRef": { "type": "string", "minLength": 1 },
+        "chain": { "type": "string", "minLength": 1 },
+        "network": { "type": "string", "minLength": 1 },
+        "asset": { "type": "string", "minLength": 1 },
+        "payingDappId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "orderedRouteIds": {
+      "type": "array",
+      "minItems": 1, "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

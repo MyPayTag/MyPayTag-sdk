@@ -13,6 +13,9 @@ import type {
   MyPayTagStatus,
   NotificationEvent,
   PayToRoute,
+  PortalHistoryResponse,
+  PortalPreferencesResponse,
+  PortalPreferencesUpdateRequest,
   ProviderCallbackRequest,
   ProviderResponse,
   RouteDeleteResponse,
@@ -99,6 +102,15 @@ export const validateRouteUpdateRequest = (payload: unknown) =>
 
 export const validateRouteDeleteResponse = (payload: unknown) =>
   validateProtocolPayload<RouteDeleteResponse>("route-delete-response", payload);
+
+export const validatePortalPreferencesResponse = (payload: unknown) =>
+  validateProtocolPayload<PortalPreferencesResponse>("portal-preferences-response", payload);
+
+export const validatePortalPreferencesUpdateRequest = (payload: unknown) =>
+  validateProtocolPayload<PortalPreferencesUpdateRequest>("portal-preferences-update-request", payload);
+
+export const validatePortalHistoryResponse = (payload: unknown) =>
+  validateProtocolPayload<PortalHistoryResponse>("portal-history-response", payload);
 
 export const validateResolveRequest = (payload: unknown) =>
   validateProtocolPayload<ResolveRequest>("resolve-request", payload);

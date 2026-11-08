@@ -1,6 +1,24 @@
 # Main Session Log
 
 agent: Codex
+branch: codex/5-user-portal-sdk
+head: pending commit for MyPayTag-sdk#6
+summary: Refreshed generated SDK API artifacts for MyPayTag-sdk#6 after the authenticated portal contract additions, including the generated Postman collection for the new portal preference and history endpoints.
+validation: Ran pnpm api:postman and pnpm validate; validation regenerated protocol types, linted OpenAPI, built and typechecked all packages, passed 64 workspace tests per package test run, passed the public-boundary scan, cleaned, and rebuilt package dist outputs.
+follow-ups: SDK Goal #4 can be validated after this generated-artifact task is independently reviewed.
+
+---
+
+agent: Codex
+branch: codex/5-user-portal-sdk
+head: 1adad59
+summary: Implemented MyPayTag-sdk#5 by adding authenticated portal preference and history contracts across protocol schemas, validators, fixtures, focused tests, generated protocol source, and OpenAPI paths/components.
+validation: Ran pnpm generate, pnpm build, pnpm api:validate, pnpm test, and pnpm scan:public-boundary; full workspace tests passed after building package entries in the fresh worktree.
+follow-ups: MyPayTag-sdk#6 should refresh distribution/package artifacts and final SDK validation evidence from these source contracts.
+
+---
+
+agent: Codex
 branch: main
 head: b6b5f14
 summary: Added and README-linked a public protocol and SDK architecture doc covering schemas, statuses, SDK helpers, provider helpers, examples, fixtures, and public documentation boundaries.
