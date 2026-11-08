@@ -254,6 +254,12 @@ describe("@mypaytag/protocol", () => {
         orderedRouteIds: [],
       }),
     ).toThrow();
+    expect(() =>
+      validatePortalPreferencesUpdateRequest({
+        ...validPortalPreferencesUpdateRequest,
+        orderedRouteIds: ["route-1", "route-1"],
+      }),
+    ).toThrow();
   });
 
   it("rejects portal history payloads that omit user scope or expose private diagnostics", () => {

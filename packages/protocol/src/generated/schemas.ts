@@ -1153,9 +1153,7 @@ export const PortalHistoryResponseSchema = {
       "required": [
         "label",
         "amount",
-        "asset",
-        "chargedTo",
-        "source"
+        "asset"
       ],
       "properties": {
         "label": {
@@ -1186,12 +1184,27 @@ export const PortalHistoryResponseSchema = {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "label",
-        "from",
-        "to"
+        "label"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "routeReference"
+          ]
+        },
+        {
+          "required": [
+            "from",
+            "to"
+          ]
+        }
       ],
       "properties": {
         "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "routeReference": {
           "type": "string",
           "minLength": 1
         },
@@ -1434,6 +1447,50 @@ export const PortalHistoryResponseSchema = {
         }
       }
     },
+    "selectedQuoteSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "questionId",
+        "quoteId",
+        "selectedAt",
+        "status"
+      ],
+      "properties": {
+        "kind": {
+          "const": "selected_quote"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quoteId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selectedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "ready",
+            "expired",
+            "failed"
+          ]
+        },
+        "payableInstructionRef": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "paymentIntent": {
       "type": "object",
       "additionalProperties": false,
@@ -1489,9 +1546,20 @@ export const PortalHistoryResponseSchema = {
       "required": [
         "kind",
         "id",
-        "paymentIntentId",
         "createdAt",
         "status"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "paymentIntentId"
+          ]
+        },
+        {
+          "required": [
+            "selectedQuoteId"
+          ]
+        }
       ],
       "properties": {
         "kind": {
@@ -1501,7 +1569,15 @@ export const PortalHistoryResponseSchema = {
           "type": "string",
           "minLength": 1
         },
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
         "paymentIntentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selectedQuoteId": {
           "type": "string",
           "minLength": 1
         },
@@ -1545,6 +1621,9 @@ export const PortalHistoryResponseSchema = {
         },
         {
           "$ref": "#/$defs/quote"
+        },
+        {
+          "$ref": "#/$defs/selectedQuoteSummary"
         },
         {
           "$ref": "#/$defs/paymentIntent"
@@ -1750,6 +1829,7 @@ export const PortalPreferencesUpdateRequestSchema = {
     "orderedRouteIds": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "string",
         "minLength": 1

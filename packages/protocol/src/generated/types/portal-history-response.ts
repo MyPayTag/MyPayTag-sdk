@@ -1,7 +1,32 @@
 /* eslint-disable */
 // Generated from packages/protocol/schemas/portal-history-response.schema.json. Do not edit by hand.
 
-export type HistoryItem = Question | Answer | Quote | PaymentIntent | Receipt;
+export type HistoryItem = Question | Answer | Quote | SelectedQuoteSummary | PaymentIntent | Receipt;
+export type RouteStep = RouteStep1 & {
+  label: string;
+  routeReference?: string;
+  from?: AssetAmount;
+  to?: AssetAmount;
+};
+export type RouteStep1 = {
+  [k: string]: unknown;
+};
+export type Receipt = Receipt1 & {
+  kind: "receipt";
+  id: string;
+  questionId?: string;
+  paymentIntentId?: string;
+  selectedQuoteId?: string;
+  createdAt: string;
+  status: "pending" | "completed" | "failed" | "unavailable";
+  transactionHash?: string;
+  chain?: string;
+  network?: string;
+  explorerUrl?: string;
+};
+export type Receipt1 = {
+  [k: string]: unknown;
+};
 
 export interface PortalHistoryResponse {
   schema: "mypaytag.portal.history.v1";
@@ -84,13 +109,17 @@ export interface Fee {
   label: string;
   amount: string;
   asset: string;
-  chargedTo: "sender" | "recipient";
-  source: string;
+  chargedTo?: "sender" | "recipient";
+  source?: string;
 }
-export interface RouteStep {
-  label: string;
-  from: AssetAmount;
-  to: AssetAmount;
+export interface SelectedQuoteSummary {
+  kind: "selected_quote";
+  id: string;
+  questionId: string;
+  quoteId: string;
+  selectedAt: string;
+  status: "ready" | "expired" | "failed";
+  payableInstructionRef?: string;
 }
 export interface PaymentIntent {
   kind: "payment_intent";
@@ -101,15 +130,4 @@ export interface PaymentIntent {
   payToDapp: DappSummary;
   amount: AssetAmount;
   expiresAt: string;
-}
-export interface Receipt {
-  kind: "receipt";
-  id: string;
-  paymentIntentId: string;
-  createdAt: string;
-  status: "pending" | "completed" | "failed" | "unavailable";
-  transactionHash?: string;
-  chain?: string;
-  network?: string;
-  explorerUrl?: string;
 }

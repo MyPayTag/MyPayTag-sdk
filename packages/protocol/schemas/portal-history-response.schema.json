@@ -46,7 +46,7 @@
     "fee": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["label", "amount", "asset", "chargedTo", "source"],
+      "required": ["label", "amount", "asset"],
       "properties": {
         "label": { "type": "string", "minLength": 1 },
         "amount": { "type": "string", "pattern": "^[0-9]+(\\.[0-9]+)?$" },
@@ -58,9 +58,11 @@
     "routeStep": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["label", "from", "to"],
+      "required": ["label"],
+      "anyOf": [{ "required": ["routeReference"] }, { "required": ["from", "to"] }],
       "properties": {
         "label": { "type": "string", "minLength": 1 },
+        "routeReference": { "type": "string", "minLength": 1 },
         "from": { "$ref": "#/$defs/assetAmount" },
         "to": { "$ref": "#/$defs/assetAmount" }
       }
@@ -162,6 +164,20 @@
         }
       }
     },
+    "selectedQuoteSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "questionId", "quoteId", "selectedAt", "status"],
+      "properties": {
+        "kind": { "const": "selected_quote" },
+        "id": { "type": "string", "minLength": 1 },
+        "questionId": { "type": "string", "minLength": 1 },
+        "quoteId": { "type": "string", "minLength": 1 },
+        "selectedAt": { "type": "string", "format": "date-time" },
+        "status": { "enum": ["ready", "expired", "failed"] },
+        "payableInstructionRef": { "type": "string", "minLength": 1 }
+      }
+    },
     "paymentIntent": {
       "type": "object",
       "additionalProperties": false,
@@ -180,11 +196,14 @@
     "receipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "id", "paymentIntentId", "createdAt", "status"],
+      "required": ["kind", "id", "createdAt", "status"],
+      "anyOf": [{ "required": ["paymentIntentId"] }, { "required": ["selectedQuoteId"] }],
       "properties": {
         "kind": { "const": "receipt" },
         "id": { "type": "string", "minLength": 1 },
+        "questionId": { "type": "string", "minLength": 1 },
         "paymentIntentId": { "type": "string", "minLength": 1 },
+        "selectedQuoteId": { "type": "string", "minLength": 1 },
         "createdAt": { "type": "string", "format": "date-time" },
         "status": { "enum": ["pending", "completed", "failed", "unavailable"] },
         "transactionHash": { "type": "string", "minLength": 1 },
@@ -198,6 +217,7 @@
         { "$ref": "#/$defs/question" },
         { "$ref": "#/$defs/answer" },
         { "$ref": "#/$defs/quote" },
+        { "$ref": "#/$defs/selectedQuoteSummary" },
         { "$ref": "#/$defs/paymentIntent" },
         { "$ref": "#/$defs/receipt" }
       ]
